@@ -65,12 +65,11 @@ subroutine output(Iter, Riter, t_tot, RelRes, x)
 	use globvar
 	implicit none
 
-	integer, intent(in) :: Iter, Riter
-	real(dp), intent(in) :: x(n)
+	real(dp), intent(in) :: t_tot, x(n)
 	real(dp), intent(inout) :: RelRes(Iter)
-	real(dp), intent(in) :: t_tot
 	real(dp) r(m), ATr(n)
 	real(dp) tmp, norm_b, norm_r, norm_ATb, norm_ATr
+	integer, intent(in) :: Iter, Riter	
 	integer :: info = 10, reshis=11, sol = 12
 	integer i, is, j, l, k, k1, k2
 

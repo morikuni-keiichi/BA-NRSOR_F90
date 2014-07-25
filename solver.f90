@@ -219,10 +219,8 @@ contains
 	
 	real(dp), intent(inout) :: rhs(:)
 	real(dp), intent(out) :: x(:)
-	real(dp) d, e, res1, res2, y(n), tmprhs(m)
+	real(dp) :: d, e, res1, res2 = zero, y(n), tmprhs(m)
 	integer i, ii, j, k, k1, k2, l
-
-	res2 = zero
 
 	tmprhs(1:m) = rhs(1:m)
 	

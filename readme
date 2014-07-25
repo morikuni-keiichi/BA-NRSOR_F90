@@ -1,5 +1,5 @@
 Codes for the BA-GMRES method preconditioned by the NR-SOR inner iterations 
-Copyright 2013-2014 Keiichi Morikuni morikuni@nii.ac.jp,July 25, 2014
+Copyright 2013-2014 Keiichi Morikuni morikuni@cs.cas.cz,July 25, 2014
 URL:   http://researchmap.jp/KeiichiMorikuni/
 
 Maintained by
@@ -40,8 +40,7 @@ is given in RANDL7 directory. Parameters such as the number of NR-SOR inner
 iterations and the NR-SOR relaxation parameter are written in prm.dat.
 The NR-SOR inner iteration parameters can be automatically tuned at each restart.
 
-To compile the codes and run the program on Linux,
-proceed as follows:
+To compile the codes and run the program, proceed as follows:
 
   $ make 
   $ ./main
