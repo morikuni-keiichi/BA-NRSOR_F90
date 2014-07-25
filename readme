@@ -1,11 +1,11 @@
 Codes for the BA-GMRES method preconditioned by the NR-SOR inner iterations 
-Copyright 2013 Keiichi Morikuni morikuni@nii.ac.jp, April 24, 2013
+Copyright 2013-2014 Keiichi Morikuni morikuni@nii.ac.jp,July 25, 2014
 URL:   http://researchmap.jp/KeiichiMorikuni/
 
 Maintained by
- Keiichi Morikuni <morikuni@nii.ac.jp>
- National Institute of Informatics 
- 2-1-2 Hitotsubashi, Chiyoda-ku, Tokyo 101-8430, Japan
+ Keiichi Morikuni <morikuni@cs.cas.cz>
+ Institute of Computer Science, Academy of Sciences of the Czech Republic
+ Pod vodarenskou vezi 271/2, 182 07 Prague 8, Czech Republic
 
 Supported by 
  The Graduate University for Advanced Studies (SOKENDAI)
@@ -21,19 +21,19 @@ SIAM Journal on Matrix Analysis and Applications, Volume 34, Number 1,
 pages 1-22, 2013.
 
 For the commercial use, please make a contact to 
-Keiichi Morikuni morikuni@nii.ac.jp 
+Keiichi Morikuni morikuni@cs.cas.cz
 
 BA-GMRES preconditioned by NR-SOR inner iterations involves the following files:
 
-   main.f90 		last update March 4, 2014
-   solver.f90		last update March 4, 2014
-   sub.f90		last update March 4, 2014
+   main.f90 		last update July 25, 2014
+   solver.f90		last update July 25, 2014
+   sub.f90		last update July 25, 2014
    func.f90	
    globvar.f90		last update March 4, 2014
    prm.dat		last update March 4, 2014
    plot.plt		(may be used if gnuplot is available)
-   makefile		last update March 4, 2014
-   readme		last update March 4, 2014
+   makefile		last update July 25, 2014
+   readme		last update July 25, 2014
 
 A test matrix called RANDL7 in the compressed column storage (CCS) format 
 is given in RANDL7 directory. Parameters such as the number of NR-SOR inner 
@@ -51,7 +51,7 @@ the result data info.dat, and the relative residual norm history data reshis.dat
 In addition, some spcific data is output in log.csv.
 
 Please provide feedback if you have any questions or suggestions.
-morikuni@nii.ac.jp
+morikuni@cs.cas.cz
 
 
 References
