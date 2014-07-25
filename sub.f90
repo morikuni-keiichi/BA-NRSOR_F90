@@ -4,7 +4,7 @@ subroutine read_prm()
 
 	integer :: fi = 11, is
 	
-	open(fi, file='prm.dat', action='read', iostat = is)
+	open(fi, file='prm.dat', action='read', iostat = is, status="old")
 	if (is /= 0) stop 'cannot open a parameter file'
 	read(fi, *) cri_res 
 	read(fi, *) omg
@@ -18,53 +18,44 @@ subroutine read_prm()
 	end subroutine read_prm
 !---------------------------------------------------------------------------
 
-subroutine read_mat 
+subroutine read_mat()
 	use globvar
 	implicit none
 
 	real(dp) :: two = 2.0d0
-	integer i, is, j, k, l
+	integer is, j, l
 	integer :: fi_AC = 14, fi_jp = 15, fi_ia = 16
 
-	open(fi_AC, file = 'RANDL7/AC.ccs', action = 'read', iostat = is)
+	open(fi_AC, file = 'RANDL7/AC.ccs', action = 'read', iostat = is, status="old")
 	if (is /= 0) stop 'cannot open AC file'
 	read(fi_AC, *) m, n, nnz
 
 	allocate(AC(nnz))
 	allocate(jp(n+1))
 	allocate(ia(nnz))
-
 	allocate(b(m))
 	allocate(Aei(n))
 
 ! Load AC	
-	do k = 1, nnz
-		read(fi_AC, *) AC(k)
-	enddo
+	read(fi_AC, *) (AC(l), l = 1, nnz)
 	close(fi_AC)
 
 ! Load jp
-	open(fi_jp, file ='RANDL7/jp.ccs', action = 'read', iostat = is)
+	open(fi_jp, file ='RANDL7/jp.ccs', action = 'read', iostat = is, status="old")
 	if (is /= 0) stop 'cannot open jp file'
-	do j = 1, n+1
-		read(fi_jp, *) jp(j)
-	enddo
+	read(fi_jp, *) (jp(j), j = 1, n+1)
 	close(fi_jp)
 
 ! Load ia
-	open(fi_ia, file = 'RANDL7/ia.ccs', action = 'read', iostat = is)
+	open(fi_ia, file = 'RANDL7/ia.ccs', action = 'read', iostat = is, status="old")
 	if (is /= 0) stop 'cannot open ia file'
-	do l = 1, nnz
-		read(fi_ia, *) ia(l)
-	enddo
+	read(fi_ia, *) (ia(l), l = 1, nnz)
 	close(fi_ia)
 
 !	b : = random
 !	call random_seed
 	call random_number(b(1:m))
-	do i = 1, m
-		b(i) = two*b(i) - one
-	enddo
+	b(1:m) = two*b(1:m) - one
 
 end subroutine read_mat 
 
@@ -135,7 +126,7 @@ subroutine output(Iter, Riter, t_tot, RelRes, x)
 	
 	endif
 
-	open(info, file='info.dat', action='write', iostat=is)
+	open(info, file='info.dat', action='write', iostat=is, status='replace')
 	if (is /= 0) stop 'cannot open info.dat file'
 	write(info, '(a, f6.3)') ' omega: ', omg
 	write(info, *) '# of outer iterations: ', Iter
@@ -148,14 +139,14 @@ subroutine output(Iter, Riter, t_tot, RelRes, x)
 	write(info, *) 'Actual relative residual (r): ', norm_r / norm_b	
 	close(info)
 	
-	open(reshis, file='reshis.dat', action='write', iostat=is)
+	open(reshis, file='reshis.dat', action='write', iostat=is, status='replace')
 	if (is /= 0) stop 'cannot open reshis.dat file'
 	do k = 1, Iter
 		write(reshis, *) k, RelRes(k)
 	enddo
 	close(reshis)
 	
-	open(sol, file='solution.dat', action='write', iostat=is)
+	open(sol, file='solution.dat', action='write', iostat=is, status='replace')
 	if (is /= 0) stop 'cannot open solution.dat file'
 	do j = 1, n
 		write(sol, *) x(j)

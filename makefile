@@ -1,5 +1,12 @@
 PROG		= main
 
+# GNU fortran
+FC 		= gfortran
+# normal ver.
+FFLAGS		= -O4 # -pg
+# debug ver.
+#FFLAGS		= -g -O0 -Wall -Wtabs -Wintrinsics-std -Wintrinsic-shadow -fbounds-check -O -Wuninitialized -fbacktrace
+
 # Intel Fortran option
 #FC		= ifort
 # normal ver.
@@ -9,12 +16,6 @@ PROG		= main
 # debug ver.
 #FFLAGS		= -CB -traceback -g -check uninit -warn all -check all -std
 
-# GNU fortran
-FC 		= gfortran
-# normal ver.
-FFLAGS		= -O4 # -pg
-# debug ver.
-#FFLAGS		= -g -Wall -Wtabs -Wintrinsics-std -Wintrinsic-shadow -fbounds-check -O -Wuninitialized -fbacktrace
 
 COMMON_MOD 	= globvar.f90 func.f90 solver.f90
 OBJCTS		= globvar.o func.o sub.o solver.o main.o

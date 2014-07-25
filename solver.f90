@@ -10,7 +10,7 @@ contains
 	real(dp) H(omax+1, omax), V(n, omax+1)
 	real(dp), intent(out) :: RelRes(:), x(:)
 	real(dp) c(omax), g(omax+1), r(m), s(omax), w(n), x0(n), y(omax)
-	real(dp) :: beta, deps = 1.0d-15, inprod, tmp, Tol
+	real(dp) :: beta, deps = 2.0d-52, inprod, tmp, Tol
 	integer, intent(out) :: Iter, Riter
 	integer :: bd = 0, i, iter_tot = 1, j, k, k1, k2, l, p
 	real(dp) :: t0, t1, t2, t_cri
@@ -64,7 +64,7 @@ contains
 			write(*, *) 'Automatic NR-SOR inner-iteration parameter tuning'
 			call atNRSOR(r(1:m), w(1:n))
 			write(*, *) 'Tuned'
-		elseif (at == 0) then
+		else if (at == 0) then
 		! NR-SOR inner-iteration preconditioning without automatic parameter tuning 
 			call NRSOR(r(1:m), w(1:n))
 		endif
@@ -201,13 +201,9 @@ contains
 
 	do k = 1, nin 
 		do j = 1, n
-			d = zero
 			k1 = jp(j)
 			k2 = jp(j+1)-1
-			do l = k1, k2
-				d = d + rhs(ia(l))*AC(l)
-			enddo
-			d = omg * d * Aei(j)
+			d = omg * sum(rhs(ia(k1:k2))*AC(k1:k2)) * Aei(j)
 			x(j) = x(j) + d
 			if (k == nin .and. j == n) return
 			do l = k1, k2
@@ -224,7 +220,7 @@ contains
 	real(dp), intent(inout) :: rhs(:)
 	real(dp), intent(out) :: x(:)
 	real(dp) d, e, res1, res2, y(n), tmprhs(m)
-	integer i, j, k, k1, k2, l
+	integer i, ii, j, k, k1, k2, l
 
 	res2 = zero
 
@@ -243,12 +239,13 @@ contains
 			d = omg * sum(rhs(ia(k1:k2))*AC(k1:k2)) * Aei(j)
 			x(j) = x(j) + d
 			do l = k1, k2
-				rhs(ia(l)) = rhs(ia(l)) - d*AC(l)
+				ii = ia(l)
+				rhs(ii) = rhs(ii) - d*AC(l)
 			enddo
 		enddo
 		
 		d = maxval(abs(x(1:n)))
-		e =	maxval(abs(x(1:n) - y(1:n))) 
+		e = maxval(abs(x(1:n) - y(1:n))) 
  
 		if (e < 1.0d+1 ** (-one) * d .or. i == 100) then
 			nin = i
@@ -269,17 +266,13 @@ contains
 
 		do i = 1, nin 
 			do j = 1, n
-				d = zero
 				k1 = jp(j)
 				k2 = jp(j+1)-1
-				do l = k1, k2
-					d = d + rhs(ia(l))*AC(l)
-				enddo
-				d = omg * d * Aei(j)
+				d = omg * sum(rhs(ia(k1:k2))*AC(k1:k2)) * Aei(j)
 				x(j) = x(j) + d
-				if (i == nin .and. j == n) exit 
 				do l = k1, k2
-					rhs(ia(l)) = rhs(ia(l)) - d*AC(l)
+					ii = ia(l)
+					rhs(ii) = rhs(ii) - d*AC(l)
 				enddo
 			enddo
 		enddo
@@ -291,7 +284,7 @@ contains
 				omg = omg + 1.0d-1
 				x(1:n) = y(1:n)
 				return
-			elseif (k == 1) then
+			else if (k == 1) then
 				omg = 0.1d0
 				return
 			endif

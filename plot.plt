@@ -1,4 +1,5 @@
 reset
+set format y "%.0e"
 set xlabel "Number of outer iterations"
 set ylabel "Relative residual"
 set logscale y
