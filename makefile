@@ -1,4 +1,4 @@
-PROG		= main
+PROG		= main.exe
 
 # GNU fortran
 FC 		= gfortran
@@ -12,7 +12,7 @@ FFLAGS		= -O4 # -pg
 # normal ver.
 #FFLAGS		=
 # IEEE 754 ver.
-#FFLAGS		= -fp-model precise -fimf-arch-consistency=true 
+#FFLAGS		= -fp-model precise -fimf-arch-consistency=true
 # debug ver.
 #FFLAGS		= -CB -traceback -g -check uninit -warn all -check all -std
 
@@ -24,7 +24,7 @@ OBJCTS		= globvar.o func.o sub.o solver.o main.o
 .SUFFIXES	: .o .f90
 
 .f90.o:
-	${FC} -c $< ${FFLAGS} 
+	${FC} -c $< ${FFLAGS}
 
 ${PROG}	:	${OBJCTS}
 	${FC} -o $@ ${OBJCTS} ${FFLAGS} >& err.d

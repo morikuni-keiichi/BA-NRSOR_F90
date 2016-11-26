@@ -1,4 +1,4 @@
-Codes for the BA-GMRES method preconditioned by the NR-SOR inner iterations 
+Fortran codes for the BA-GMRES method preconditioned by the NR-SOR inner iterations
 Copyright 2013-2014 Keiichi Morikuni morikuni@cs.cas.cz,July 25, 2014
 URL:   http://researchmap.jp/KeiichiMorikuni/
 
@@ -7,46 +7,46 @@ Maintained by
  Institute of Computer Science, Academy of Sciences of the Czech Republic
  Pod vodarenskou vezi 271/2, 182 07 Prague 8, Czech Republic
 
-Supported by 
+Supported by
  The Graduate University for Advanced Studies (SOKENDAI)
  Shonan Village, Hayama, Kanagawa 240-0193 Japan
 
-This software is currently released under the GNU General Public License 
+This software is currently released under the GNU General Public License
 http://www.gnu.org/copyleft/gpl.html
 
-If you use this code in research for publication, please cite the paper 
-Morikuni, K. and Hayami, K., 
+If you use this code in research for publication, please cite the paper
+Morikuni, K. and Hayami, K.,
 Inner-iteration Krylov subspace methods for least squares problems,
-SIAM Journal on Matrix Analysis and Applications, Volume 34, Number 1, 
+SIAM Journal on Matrix Analysis and Applications, Volume 34, Number 1,
 pages 1-22, 2013.
 
-For the commercial use, please make a contact to 
+For the commercial use, please make a contact to
 Keiichi Morikuni morikuni@cs.cas.cz
 
 BA-GMRES preconditioned by NR-SOR inner iterations involves the following files:
 
-   main.f90 		last update July 25, 2014
-   solver.f90		last update July 25, 2014
-   sub.f90		last update July 25, 2014
-   func.f90	
-   globvar.f90		last update March 4, 2014
-   prm.dat		last update March 4, 2014
+   main.f90 	last update January 28, 2015
+   solver.f90	last update January 28, 2015
+   sub.f90		last update January 28, 2015
+   func.f90		last update December 26, 2015
+   globvar.f90	last update January 28, 2015
+   prm.dat		last update January 28, 2015
    plot.plt		(may be used if gnuplot is available)
-   makefile		last update July 25, 2014
-   readme		last update July 25, 2014
+   makefile		last update January 28, 2015
+   readme		last update January 28, 2015
 
-A test matrix called RANDL7 in the compressed column storage (CCS) format 
-is given in RANDL7 directory. Parameters such as the number of NR-SOR inner 
+A test matrix called RANDL7 in the compressed column storage (CCS) format
+is given in RANDL7 directory. Parameters such as the number of NR-SOR inner
 iterations and the NR-SOR relaxation parameter are written in prm.dat.
 The NR-SOR inner iteration parameters can be automatically tuned at each restart.
 
 To compile the codes and run the program, proceed as follows:
 
-  $ make 
+  $ make
   $ ./main
 
 Then the program outputs the approximate solution data solution.dat,
-the result data info.dat, and the relative residual norm history data reshis.dat.  
+the result data info.dat, and the relative residual norm history data reshis.dat.
 In addition, some spcific data is output in log.csv.
 
 Please provide feedback if you have any questions or suggestions.
@@ -54,14 +54,10 @@ morikuni@cs.cas.cz
 
 
 References
-[1] Morikuni, K. and Hayami, K., 
+[1] Morikuni, K. and Hayami, K.,
 Inner-iteration Krylov subspace methods for least squares problems,
 SIAM Journal on Matrix Analysis and Applications, Volume 34, Number 1, pages 1-22, 2013.
 [2] Morikuni, K. and Hayami, K.
-Convergence of inner-iteration GMRES methods for least squares problems (Revised), 
+Convergence of inner-iteration GMRES methods for least squares problems (Revised),
 NII Technical Report, National Institute of Informatics, NII-2013-004E 1-24, 2013.
 http://www.nii.ac.jp/TechReports/13-004E.html
-
-
-
-
