@@ -1,7 +1,7 @@
 reset
 set format y "%.0e"
 set xlabel "Number of outer iterations"
-set ylabel "2-norm of relative residual"
+set ylabel "2-norm of relative residual norm"
 set logscale y
 set grid
 set multiplot

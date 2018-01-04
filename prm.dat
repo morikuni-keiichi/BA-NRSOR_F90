@@ -1,7 +1,0 @@
-1.0d-8			stopping criterion for outer iterations
-1.4d0			omega for NRSOR
-800			maximum # of outer iterations (restart cycle)
-4 			# of inner iterations
-0			# of restarts (0=full GMRES)
-1			automatic NR-SOR parameter tuning (0=off, 1=on)
-0			output mode (0=detailed, 1=simple)

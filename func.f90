@@ -1,8 +1,8 @@
 module func
-	use globvar
-	implicit none
+  use globvar
+  implicit none
 contains
-	function nrm2(x, k) result(norm)
+  function nrm2(x, k) result(norm)
 
 !*  Purpose
 !*  =======
@@ -20,7 +20,7 @@ contains
 !*     Sven Hammarling, Nag Ltd.
 !      translated into Fortran 90/95 and changed by Keiichi Morikun
 !
-!  References:
+! References:
 !
 !    Jack Dongarra, Jim Bunch, Cleve Moler, and Pete Stewart,
 !    LINPACK User's Guide,
@@ -37,30 +37,30 @@ contains
 !*
 !*  =====================================================================
 
-	real(dp), intent(in) :: x(:)
-	real(dp) absxi, norm, scale, ssq
-	integer i, k
+  real(dp), intent(in) :: x(:)
+  real(dp) absxi, norm, scale, ssq
+  integer i, k
 
-	scale = zero
-	ssq = one
+  scale = zero
+  ssq = one
 
-	do i = 1, k
-		if (x(i) /= zero) then
-	  	absxi = abs(x(i))
-	    if (scale <= absxi) then
-	    	ssq = one + ssq*(scale/absxi)**2
-	    	scale = absxi
-	    else
-	    	ssq = ssq + (absxi/scale)**2
-			endif
-		endif
-	enddo
+  do i = 1, k
+    if (x(i) /= zero) then
+      absxi = abs(x(i))
+      if (scale <= absxi) then
+        ssq = one + ssq*(scale/absxi)**2
+        scale = absxi
+      else
+        ssq = ssq + (absxi/scale)**2
+      endif
+    endif
+  enddo
 
-	norm = scale*sqrt(ssq)
+  norm = scale*sqrt(ssq)
 
-	return
+  return
 
-	end function nrm2
+  end function nrm2
 
 
   subroutine rotg(da, db, c, s)
@@ -93,39 +93,39 @@ contains
 !*
 !*  =====================================================================
 
-		real(dp), intent(inout) :: da, db
-		real(dp), intent(out) :: c, s
-		real(dp) r,roe,scale,z
+  real(dp), intent(inout) :: da, db
+  real(dp), intent(out) :: c, s
+  real(dp) r,roe,scale,z
 
-		roe = db
-	   if (abs(da) > abs(db)) roe = da
+  roe = db
+  if (abs(da) > abs(db)) roe = da
 
-	   scale = abs(da) + abs(db)
+     scale = abs(da) + abs(db)
 
-	   if (scale /= zero) go to 10
+     if (scale /= zero) go to 10
 
-	   c = one
-	   s = zero
-	   r = zero
-	   z = zero
-	   go to 20
+     c = one
+     s = zero
+     r = zero
+     z = zero
+     go to 20
 
-	   10 r = scale*sqrt((da/scale)**2 + (db/scale)**2)
+  10 r = scale*sqrt((da/scale)**2 + (db/scale)**2)
 
-	   if (roe<zero) r = -r
-	   c = da / r
-	   s = db / r
-	   z = one
+      if (roe<zero) r = -r
+      c = da / r
+      s = db / r
+      z = one
 
-	   if (abs(da) >  abs(db)) z = s
+      if (abs(da) >  abs(db)) z = s
 
-	   if (abs(db) >= abs(da) .and. c /= zero) z = one / c
+      if (abs(db) >= abs(da) .and. c /= zero) z = one / c
 
-	   20 da = r
+  20 da = r
 
-	   db = z
-	   return
+      db = z
+      return
 
-	end subroutine rotg
+  end subroutine rotg
 
 end module func

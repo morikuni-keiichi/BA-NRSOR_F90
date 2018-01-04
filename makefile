@@ -1,11 +1,18 @@
+# Makefile for F90 version of BA-NRSOR.
+# Maintained by Keiichi Morikuni <morikuni@cs.tsukuba.ac.jp>
+#
+# Frbruary 25, 2017: First version
+
 PROG		= main.exe
 
 # GNU fortran
 FC 		= gfortran
 # normal ver.
-FFLAGS		= -O4 # -pg
+FFLAGS		= -O
+# fast ver.
+# FFLAGS		= -O4
 # debug ver.
-#FFLAGS		= -g -O0 -Wall -Wtabs -Wintrinsics-std -Wintrinsic-shadow -fbounds-check -O -Wuninitialized -fbacktrace
+# FFLAGS		= -g -O0 -Wall -Wextra -Wintrinsic-shadow -Wintrinsics-std -Wtabs -fbounds-check -O -Wuninitialized -fbacktrace
 
 # Intel Fortran option
 #FC		= ifort
@@ -20,6 +27,7 @@ FFLAGS		= -O4 # -pg
 COMMON_MOD 	= globvar.f90 func.f90 solver.f90
 OBJCTS		= globvar.o func.o sub.o solver.o main.o
 
+# Clear suffix list, then define the ones
 .SUFFIXES	:
 .SUFFIXES	: .o .f90
 
