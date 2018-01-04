@@ -1,9 +1,0 @@
- omega:  1.400
- # of outer iterations:          702
- # of inner iterations:            4
- # of restarts:            0
- Restart cycle:          800
- CPU time:          3.71875
- Relative residual:    3.0717765551809622E-014
- Actual relative residual (ATr):    1.5299185048002237E-010
- Actual relative residual (r):   0.94854428832199256     
