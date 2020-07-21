@@ -36,14 +36,14 @@ Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.f
 
 BA-GMRES preconditioned by NR-SOR inner iterations involves the following files:
 
-main.f90 last update February 25, 2017
-solver.f90 last update February 25, 2017
-sub.f90 last update February 25, 2017
-func.f90 last update February 25, 2017
-globvar.f90 last update February 25, 2017
-plot.plt last update February 25, 2017
-makefile last update February 25, 2017
-readme last update February 25, 2017
+main.f90
+solver.f90
+sub.f90
+func.f90
+globvar.f90 
+plot.plt
+makefile
+readme.md
 
 A test matrix called RANDL7 in the compressed column storage (CCS) format
 is given in directory RANDL7. The values of the NR-SOR inner iteration
