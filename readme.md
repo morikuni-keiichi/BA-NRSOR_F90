@@ -75,8 +75,8 @@ possible values are
 `--nin=`
 This option determines the
 
-* - number of inner iterations for the setting `—at=0`
-* - maximum number of inner iterations for the setting `--at=n`, `n`>0 and the actual number of inner iterations are automatically determined,
+* number of inner iterations for the setting `—at=0`
+* maximum number of inner iterations for the setting `--at=n`, `n`>0 and the actual number of inner iterations are automatically determined,
 
 which must be a nonnegative integer.
 
