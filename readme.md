@@ -75,37 +75,29 @@ possible values are
 `--nin=`
 This option determines the
 
-- number of inner iterations for the setting `—at=0` and
-
-- maximum number of inner iterations for the setting `--at=n`, `n`>0 and the actual number of inner iterations are automatically determined,
+* - number of inner iterations for the setting `—at=0`
+* - maximum number of inner iterations for the setting `--at=n`, `n`>0 and the actual number of inner iterations are automatically determined,
 
 which must be a nonnegative integer.
 
-`--omg=`
-This option determines the value of the relaxation parameter for `--at=0`; otherwise the value provided is used as the initial value of the relaxation parameter for the automatic parameter tuning
+`--omg=`: This option determines the value of the relaxation parameter for `--at=0`; otherwise the value provided is used as the initial value of the relaxation parameter for the automatic parameter tuning
 
-`--tol=`
-This option determines the threshold in terms of the relative residual norm for terminating the iterations. Typically, the value is less than one.
+`--tol=`: This option determines the threshold in terms of the relative residual norm for terminating the iterations. Typically, the value is less than one.
 
-`--omax=`
-This option determines the maximum number of outer iterations.
+`--omax=`: This option determines the maximum number of outer iterations.
 
-`--rmax=`
-This option determines the restart cycle. The restart is turned off for `—rmax=0`.
+`--rmax=`: This option determines the number of restart cycles. The restart is turned off for `—rmax=0`.
 
-`--output_mode=`
-This option enables a detailed output display.
+`--output_mode=`: This option enables a detailed output display.
 
-`0`: turn off the detailed output display.
-`1`: turn on the detailed output display.
+* `0`: turn off the detailed output display.
+* `1`: turn on the detailed output display.
 
-`--fi=`
-This option determines the directory name in which the matrix data used is contained.
+`--fi=`: This option determines the directory name in which the matrix data used is contained.
 The directory name must be the relative one.
 
 Please provide feedback if you have any questions or suggestions.
 [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp)
-
 
 ### References
 
