@@ -8,9 +8,9 @@ PROG		= main.exe
 # GNU fortran
 FC 		= gfortran
 # normal ver.
-FFLAGS		= -O
+# FFLAGS		= -O
 # fast ver.
-# FFLAGS		= -O4
+FFLAGS		= -O4
 # debug ver.
 # FFLAGS		= -g -O0 -Wall -Wextra -Wintrinsic-shadow -Wintrinsics-std -Wtabs -fbounds-check -O -Wuninitialized -fbacktrace
 
@@ -24,8 +24,8 @@ FFLAGS		= -O
 #FFLAGS		= -CB -traceback -g -check uninit -warn all -check all -std
 
 
-COMMON_MOD 	= globvar.f90 func.f90 solver.f90
-OBJCTS		= globvar.o func.o sub.o solver.o main.o
+COMMON_MOD 	= floating_point_kinds.f90 func.f90 solver.f90
+OBJCTS		= floating_point_kinds.o func.o sub.o solver.o main.o
 
 # Clear suffix list, then define the ones
 .SUFFIXES	:

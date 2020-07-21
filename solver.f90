@@ -1,6 +1,7 @@
 module solver
   use func
-  use globvar
+  use,intrinsic :: iso_fortran_env
+  use floating_point_kinds
   implicit none
   private :: NRSOR, atNRSOR
   public :: BAGMRES
@@ -12,13 +13,14 @@ contains
                       x, &
                       iter, riter, relres)
 
-  real(dp) H(omax+1, omax), V(n, omax+1)
-  real(dp), intent(in) :: b(:), AC(:)
-  real(dp), intent(out) :: relres(:), x(:)  
-  real(dp) c(omax), g(omax+1), r(m), s(omax), & 
+  real(real64) H(omax+1, omax), V(n, omax+1)
+  real(real64), intent(in) :: b(:), AC(:)
+  real(real64), intent(out) :: relres(:), x(:)  
+  real(real64) c(omax), g(omax+1), r(m), s(omax), & 
             tmp_x(n), w(n), x0(n), y(omax), Aei(n)
-  real(dp), intent(in) :: omg, tol
-  real(dp) :: beta, eps, inprod, min_nrmATr, nrmATr, nrmATr0, tmp
+  real(real64), intent(in) :: tol
+  real(real64), intent(inout) :: omg
+  real(real64) :: beta, beta0, eps, inprod, nrmATr, nrmATr0, tmp
 
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: at, m, n, omax, rmax
@@ -27,7 +29,6 @@ contains
   integer :: bd = 0, i, iter_tot = 1, j, k, k1, k2, l, p
   
   eps = epsilon(eps)
-  min_nrmATr = one / epsilon(min_nrmATr)
 
 !	The initial approximate solution is equal to zero
   x0(1:n) = zero
@@ -54,6 +55,7 @@ contains
   enddo
   nrmATr0 = nrm2(w(1:n), n)
 
+  ! Main loop
   do p = 0, rmax
 
     r(1:m) = zero
@@ -70,14 +72,19 @@ contains
 
     if (at > 0) then
       write(*, *) 'Automatic NR-SOR inner-iteration parameter tuning'
-      call atNRSOR(AC, ia, jp, m, n, r(1:m), Aei(1:n), nin, omg, w(1:n))
+      call atNRSOR(AC, ia, jp, m, n, r, Aei, nin, omg, w)
       write(*, *) 'Tuned'
     else if (at == 0) then
     ! NR-SOR inner-iteration preconditioning without automatic parameter tuning
-      call NRSOR(AC, ia, jp, n, r(1:m), Aei(1:n), nin, omg, w(1:n))
+      call NRSOR(AC, ia, jp, n, r, Aei, nin, omg, w)
     endif
 
-    beta = nrm2(w(1:n), n)
+    if (p == 0) then
+      beta = nrm2(w(1:n), n)
+      beta0 = beta
+    else
+      beta = nrm2(w(1:n), n)
+    endif
 
   ! Normalization of the vector v_1
     tmp = one / beta
@@ -85,6 +92,7 @@ contains
 
     g(1) = beta
 
+  ! Restart loop
     do k = 1, omax
 
       r(1:m) = zero
@@ -97,7 +105,7 @@ contains
       enddo
 
     ! NR-SOR inner-iteration preconditioning
-      call NRSOR(AC, ia, jp, n, r(1:m), Aei(1:n), nin, omg, w(1:n))
+      call NRSOR(AC, ia, jp, n, r, Aei, nin, omg, w)
 
     ! Modified Gram-Schmidt orthogonalization
       do i = 1, k
@@ -134,32 +142,32 @@ contains
       g(k+1) = -s(k)*g(k)
       g(k) = c(k)*g(k)
 
-      relres(iter_tot) = abs(g(k+1)) / beta
+      relres(iter_tot) = abs(g(k+1)) / beta0
 
     !	Convergence check
       if (relres(iter_tot) < tol .or. & 
-         (k == omax .and. p==rmax) .or. bd == 1) then
+         k == omax .or. bd == 1) then
 
-      !	Derivation of the approximate solution x_k
-      !	Backward substitution
-      y(k) = g(k) * H(k, k)
-      do i = k-1, 1, -1
-        y(i) = (g(i) - sum(H(i, i+1:k) * y(i+1:k))) * H(i, i)
-      enddo
-
-      tmp_x(1:n) = x0(1:n) + matmul(V(1:n, 1:k), y(1:k))
-
-      r(1:m) = zero
-      do j = 1, n
-        tmp = tmp_x(j)
-        do l = jp(j), jp(j+1)-1
-          i = ia(l)
-          r(i) = r(i) + tmp*AC(l)
+        !	Derivation of the approximate solution x_k
+        !	Backward substitution
+        y(k) = g(k) * H(k, k)
+        do i = k-1, 1, -1
+          y(i) = (g(i) - sum(H(i, i+1:k) * y(i+1:k))) * H(i, i)
         enddo
-      enddo
 
-      ! r_k = b - A*x_k
-      r(1:m) = b(1:m) - r(1:m)
+        x(1:n) = x0(1:n) + matmul(V(1:n, 1:k), y(1:k))
+
+        r(1:m) = zero
+        do j = 1, n
+          tmp = x(j)
+          do l = jp(j), jp(j+1)-1
+            i = ia(l)
+            r(i) = r(i) + tmp*AC(l)
+          enddo
+        enddo
+
+        ! r_k = b - A*x_k
+        r(1:m) = b(1:m) - r(1:m)
 
       ! w = A^T r
         do j = 1, n
@@ -168,15 +176,8 @@ contains
           w(j) = sum(AC(k1:k2) * r(ia(k1:k2)))
         enddo
 
-        nrmATr = nrm2(w(1:n), n)
-          
-        if (nrmATr < min_nrmATr) then
-          x(1:n) = tmp_x(1:n)
-          min_nrmATr = nrmATr
-        endif
-
         if (nrm2(w(1:n), n) < tol*nrmATr0 .or. &
-            (k == omax .and. p==rmax) .or. bd == 1) then
+          (p==rmax .and. k==omax) .or. bd == 1) then
 
           iter = iter_tot
           Riter = p          
@@ -195,28 +196,17 @@ contains
 
   enddo
 
-!	Derivation of the approximate solution x_k
-!	Backward substitution
-  y(k) = g(k) * H(k, k)
-  do i = k-1, 1, -1
-    y(i) = (g(i) - sum(H(i, i+1:k) * y(i+1:k))) * H(i, i)
-  enddo
-
-  x(1:n) = matmul(V(1:n, 1:k), y(1:k))
-
-  x(1:n) = x0(1:n) + x(1:n)
-
   end subroutine BAGMRES
 
   subroutine NRSOR(AC, ia, jp, n, rhs, Aei, nin, omg, x)
 
-  real(dp), intent(in) :: AC(:)
-  real(dp), intent(out) :: x(:), Aei(:)
-  real(dp), intent(inout) :: rhs(:)
+  real(real64), intent(in) :: AC(:), Aei(:)
+  real(real64), intent(inout) :: rhs(:)
+  real(real64), intent(out) :: x(:)
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: n, nin
-  real(dp), intent(in) :: omg
-  real(dp) d
+  real(real64), intent(in) :: omg
+  real(real64) d
   integer i, j, k, k1, k2, l
 
   x(1:n) = zero
@@ -239,13 +229,13 @@ contains
 
   subroutine atNRSOR(AC, ia, jp, m, n, rhs, Aei, nin, omg, x)
 
-  real(dp), intent(in) :: Aei(:), AC(:)
-  real(dp), intent(inout) :: rhs(:)
-  real(dp), intent(out) :: x(:)
+  real(real64), intent(in) :: AC(:), Aei(:)
+  real(real64), intent(inout) :: rhs(:)
+  real(real64), intent(out) :: x(:)
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: m, n
   integer, intent(out) :: nin
-  real(dp) :: d, e, omg, res1, res2 = zero, y(n), tmprhs(m)
+  real(real64) :: d, e, omg, res1, res2 = zero, y(n), tmprhs(m)
   integer i, ii, j, k, k1, k2, l
 
   tmprhs(1:m) = rhs(1:m)
@@ -266,7 +256,7 @@ contains
         rhs(ii) = rhs(ii) - d*AC(l)
     enddo
   enddo
-
+  
   d = maxval(abs(x(1:n)))
   e = maxval(abs(x(1:n) - y(1:n)))
 
@@ -275,7 +265,7 @@ contains
     exit
   endif
 
-   y(1:n) = x(1:n)
+  y(1:n) = x(1:n)
 
   enddo
 

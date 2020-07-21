@@ -1,62 +1,125 @@
 module sub
   use func
-  use globvar
+  use,intrinsic :: iso_fortran_env
+  use floating_point_kinds, only : zero, one
   implicit none
   public :: read_prm, read_mat, output, discard
 contains
 subroutine read_prm(nin, omg, omax, output_mode, rmax, tol, at)
-  use globvar
+  
   implicit none
 
-  real(dp), intent(out) :: omg, tol
-  integer, intent(out) :: at, nin, omax, output_mode, rmax
-  integer :: fi = 11, i, is, narg
+  real(real64), intent(inout) :: omg, tol
+  integer, intent(inout) :: at, nin, omax, output_mode, rmax
+  integer :: i, ierror, length, narg, satus
+  integer :: set_at = 0, set_nin = 0, set_omg = 0, set_tol = 0, set_omax = 0, set_rmax = 0, set_output_mode = 0
   character*100 argv
 
   narg = command_argument_count()
-  if (narg > 8) then
-    stop "Error: Too many arguments."
-  else if (narg < 8) then
-    stop "Error: Too few arguments."
-  endif
 
   do i = 1, narg
-      call getarg(i, argv)
-      if (index(argv(1:5), "--at=") == 1) then
-         read(argv(6:len_trim(argv)), *) at
-         write(*, *) "at=", at
-      else if (index(argv(1:6), "--nin=") == 1) then
-         read(argv(7:len_trim(argv)), *) nin
-         write(*, *) "nin=", nin
-      else if (index(argv(1:6), "--omg=") == 1) then
-         read(argv(7:len_trim(argv)), *) omg
-         write(*, *) "omax(1)=", omg
-      else if (index(argv(1:6), "--tol=") == 1) then
-         read(argv(7:len_trim(argv)), *) tol
-         write(*, *) "tol=", tol
-      else if (index(argv(1:7), "--omax=") == 1) then
-         read(argv(8:len_trim(argv)), *) omax
-         write(*, *) "omax=", omax
-      else if (index(argv(1:7), "--rmax=") == 1) then
-         read(argv(8:len_trim(argv)), *) rmax
-         write(*, *) "rmax=", rmax
-      else if (index(argv(1:14), "--output_mode=") == 1) then
-         read(argv(15:len_trim(argv)), *) output_mode
-         write(*, *) "output_mode=", output_mode
-      else if (index(argv(1:5), "--fi=") /= 1) then
-         write(*, *) argv
-         stop "Unknown argument"
+    call get_command_argument(i, argv, length, satus)
+    if (satus > 0) then
+      error stop "in get_command_argument"
+    endif
+    if (index(argv(1:5), "--at=") == 1) then        ! Flag for automatic parameter tuning
+      read(argv(6:len_trim(argv)), '(i1)', iostat=ierror) at          
+      if (ierror /= 0 ) then          
+        error stop "option --at="
       endif
-   enddo
+      set_at = 1
+      write(*, *) "  at=", at
+    else if (index(argv(1:6), "--nin=") == 1) then  ! Maximum number of inner iterations
+      read(argv(7:len_trim(argv)), '(i10)', iostat=ierror) nin
+      if (ierror /= 0 ) then          
+        error stop "option --nin="
+      endif
+      set_nin = 1
+      write(*, *) "  nin=", nin
+    else if (index(argv(1:6), "--omg=") == 1) then  ! Acceleration (relaxation) parameter 
+      read(argv(7:len_trim(argv)), '(f16.10)', iostat=ierror) omg
+      if (ierror /= 0 ) then          
+        error stop "option --omg="
+      endif
+      set_omg = 1
+      write(*, *) "  omax(1)=", omg
+    else if (index(argv(1:6), "--tol=") == 1) then  ! Stopping criterion
+      read(argv(7:len_trim(argv)), '(e16.10e2)', iostat=ierror) tol
+      if (ierror /= 0 ) then          
+        error stop "option --tol="
+      endif
+      set_tol = 1
+      write(*, *) "  tol=", tol
+    else if (index(argv(1:7), "--omax=") == 1) then ! Maximum # of outer iterations
+       read(argv(8:len_trim(argv)), '(i10)', iostat=ierror) omax
+       if (ierror /= 0 ) then          
+          error stop "option --omax="
+       endif
+       set_omax = 1
+       write(*, *) "  omax=", omax
+    else if (index(argv(1:7), "--rmax=") == 1) then ! Maximum # of restart cycles
+      read(argv(8:len_trim(argv)), '(i10)', iostat=ierror) rmax
+      if (ierror /= 0 ) then          
+        error stop "option --rmax="
+      endif
+      set_rmax = 1
+      write(*, *) "  rmax=", rmax
+    else if (index(argv(1:14), "--output_mode=") == 1) then
+      read(argv(15:len_trim(argv)), '(i1)', iostat=ierror) output_mode
+      if (ierror /= 0 ) then          
+        error stop "option --output_mode="
+      endif
+      set_output_mode = 1
+      write(*, *) "  output_mode=", output_mode
+    else if (index(argv(1:5), "--fi=") /= 1) then
+      write(*, *) argv
+      error stop "Unknown argument"
+    endif
+  enddo  
+
+! Set the default values of parameters (if not set above)
+  if (set_at == 0) then
+    at = 1
+    write(*, *) "  Enebled automatic paramete tuning (default)"
+  endif
+
+  if (set_nin == 0) then
+    nin = 50
+    write(*, *) "  Maximum # of inner iterations (default): ", nin
+  endif
+
+  if (set_omg == 0) then
+    omg = 1.0d0
+    write(*, *) "  Initial Value of omega (default): ", omg
+  endif    
+
+  if (set_tol == 0) then
+    tol = 1.0d-8
+    write(*, *) "  Stopping criterion (default)", tol
+  endif
+
+  if (set_omax == 0) then
+    omax = 800
+    write(*, *) "  Maximum # of outer iterations (default): ", omax
+  endif
+
+  if (set_rmax == 0) then
+    rmax = 0
+    write(*, *) "  Maximum # of restarts (default): ", rmax
+  endif  
+
+  if (set_output_mode == 0) then
+    output_mode = 0
+    write(*, *) "  Output_mode (default): ", output_mode
+  endif
 
 end subroutine read_prm
 !---------------------------------------------------------------------------
 
-subroutine read_mat(AC, ia, jp, m, n, x0, b)
-  use globvar
+subroutine read_mat(AC, ia, jp, m, n, x0, b)  
   implicit none
 
-  real(dp), allocatable, intent(out) :: AC(:), b(:), x0(:)
+  real(real64), allocatable, intent(out) :: AC(:), b(:), x0(:)
 
   integer, allocatable, intent(out) :: ia(:), jp(:)
   integer, intent(inout) :: m, n
@@ -103,16 +166,15 @@ subroutine output(AC, ia, jp, m, n, &
                   x, &
                   iter, omax, riter, relres, t_tot, &
                   output_mode)
-  use func
-  use globvar
+  use func  
   implicit none
 
-  real(dp), intent(in) :: AC(:), b(:)  
-  real(dp), intent(in) :: t_tot, x(n)
-  real(dp), intent(inout) :: relres(iter)
-  real(dp) r(m), ATr(n)
-  real(dp), intent(in) :: omg
-  real(dp) tmp, nrm_b, nrm_r, nrmATb, nrmATr
+  real(real64), intent(in) :: AC(:), b(:)  
+  real(real64), intent(in) :: t_tot, x(n)
+  real(real64), intent(inout) :: relres(iter)
+  real(real64) r(m), ATr(n)
+  real(real64), intent(in) :: omg
+  real(real64) tmp, nrm_b, nrm_r, nrmATb, nrmATr
 
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: iter, m, n, nin, omax, output_mode, riter
@@ -152,15 +214,15 @@ subroutine output(AC, ia, jp, m, n, &
 
   if (output_mode == 0) then
 
-    write(*, '(a, f6.3)') ' omega: ', omg
-    write(*, *) '# of outer iterations: ', iter
-    write(*, *) '# of inner iterations: ', nin
-    write(*, *) '# of restarts: ', riter
-    write(*, *) 'Restart cycle: ', omax
-    write(*, '(a, f16.5)') ' CPU time: ', t_tot
-    write(*, *) 'Relative residual: ', relres(iter)
-    write(*, *) 'Actual relative residual (ATr): ', nrmATr / nrmATb
-    write(*, *) 'Actual relative residual (r): ', nrm_r / nrm_b
+    write(*, '(a, f6.3)') '   omega: ', omg
+    write(*, *) '  # of outer iterations: ', iter
+    write(*, *) '  # of inner iterations: ', nin
+    write(*, *) '  # of restarts: ', riter
+    write(*, *) '  Restart cycle: ', omax
+    write(*, '(a, f16.5)') '   CPU time: ', t_tot
+    write(*, *) '  Relative residual: ', relres(iter)
+    write(*, *) '  Actual relative residual (ATr): ', nrmATr / nrmATb
+    write(*, *) '  Actual relative residual (r): ', nrm_r / nrm_b
 
   else
 
@@ -198,9 +260,8 @@ subroutine output(AC, ia, jp, m, n, &
 end subroutine output
 
 subroutine discard(AC, ia, jp, b)
-  use globvar
   implicit none
-  real(dp), allocatable, intent(inout) :: AC(:), b(:)
+  real(real64), allocatable, intent(inout) :: AC(:), b(:)
   integer,  allocatable, intent(inout) :: ia(:), jp(:)
 
   deallocate(AC, jp, ia)

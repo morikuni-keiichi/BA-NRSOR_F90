@@ -1,5 +1,5 @@
 module func
-  use globvar
+  use floating_point_kinds
   implicit none
 contains
   function nrm2(x, k) result(norm)
@@ -37,8 +37,8 @@ contains
 !*
 !*  =====================================================================
 
-  real(dp), intent(in) :: x(:)
-  real(dp) absxi, norm, scale, ssq
+  real(real64), intent(in) :: x(:)
+  real(real64) absxi, norm, scale, ssq
   integer i, k
 
   scale = zero
@@ -93,9 +93,9 @@ contains
 !*
 !*  =====================================================================
 
-  real(dp), intent(inout) :: da, db
-  real(dp), intent(out) :: c, s
-  real(dp) r,roe,scale,z
+  real(real64), intent(inout) :: da, db
+  real(real64), intent(out) :: c, s
+  real(real64) r,roe,scale,z
 
   roe = db
   if (abs(da) > abs(db)) roe = da
@@ -123,8 +123,8 @@ contains
 
   20 da = r
 
-      db = z
-      return
+  db = z
+  return
 
   end subroutine rotg
 
