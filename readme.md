@@ -18,22 +18,6 @@ Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.f
 
 ## Organization
 
-The codes consist of the following files:
-
-* main.f90
-* solver.f90
-* sub.f90
-* func.f90
-* floating_point_kinds.f90
-* plot.plt
-* makefile
-* readme.md
-* test.sh
-
-A test matrix called RANDL7 in the compressed column storage (CCS) format
-is given in directory RANDL7. The values of the NR-SOR inner-iteration
-parameters can be automatically tuned at each restart or specified by you.
-
 ## Usage
 
 To simply run the program, execute the following:
@@ -50,12 +34,13 @@ $ make
 
 Change the Fortran compiler given in the Makefile file if necessary.
 
-To simply run the program with the default values of parameters on the test matrix RANDL7, execute the following:
+To simply run the program with the default values of parameters on a test matrix RANDL7, execute the following:
 
 ```
-$ ./main --fi=RANDL7/
+$ ./main 
 ```
 Then the program outputs the approximate solution data solution.dat, the result data info.dat, and the relative residual norm history data reshis.dat.
+The test matrix called RANDL7 in the compressed column storage (CCS) format is given in directory RANDL7.
 
 To run the program with specific values of parameters on the test matrix RANDL7, execute the following:
 
@@ -72,6 +57,7 @@ iterations and the relaxation parameter. A value for this option must be provide
 possible values are
 -- `0`: turn off the automatic parameter tuning
 -- `1`: turn on it.
+The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart or specified by you.
 
 - `--nin=`: Nonnegative integer
 This option determines the  
