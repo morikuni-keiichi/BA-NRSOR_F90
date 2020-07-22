@@ -2,9 +2,6 @@
 
 by Keiichi Morikuni and Ken Hayami
 
-Latest update: July 21, 2020
-
-
 ## License
 
 This software is currently released under the [GNU General Public License](http://www.gnu.org/copyleft/gpl.html).
