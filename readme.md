@@ -15,9 +15,6 @@ For commercial use, please make a contact to
 Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp).
 
 
-
-## Organization
-
 ## Usage
 
 To simply run the program, execute the following:
