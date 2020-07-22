@@ -1,5 +1,5 @@
 # Makefile for F90 version of BA-NRSOR.
-# Maintained by Keiichi Morikuni <morikuni@cs.tsukuba.ac.jp>
+# Maintained by Keiichi Morikuni <morikuni.keiichi.fw@u.tsukuba.ac.jp>
 #
 # Frbruary 25, 2017: First version
 
@@ -22,7 +22,6 @@ FFLAGS		= -O4
 #FFLAGS		= -fp-model precise -fimf-arch-consistency=true
 # debug ver.
 #FFLAGS		= -CB -traceback -g -check uninit -warn all -check all -std
-
 
 COMMON_MOD 	= floating_point_kinds.f90 func.f90 solver.f90
 OBJCTS		= floating_point_kinds.o func.o sub.o solver.o main.o
