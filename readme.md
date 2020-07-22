@@ -101,7 +101,6 @@ The directory name must be the relative one.
 Please provide feedback to [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp) if you have any questions or suggestions.
 
 Keiichi Morikuni, Ph.D.  
-Assistant Professor
 
 Affiliation: Faculty of Engineering, Information and Systems, University of Tsukuba  
 Postal Address: 1-1-1 Tennodai, Tsukuba, Ibaraki 305-8573, Japan
