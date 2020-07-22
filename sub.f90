@@ -5,14 +5,14 @@ module sub
   implicit none
   public :: read_prm, read_mat, output, discard
 contains
-subroutine read_prm(nin, omg, omax, output_mode, rmax, tol, at)
-  
+subroutine read_prm(nin, omg, omax, verbose, rmax, tol, at, directory)
   implicit none
 
   real(real64), intent(inout) :: omg, tol
-  integer, intent(inout) :: at, nin, omax, output_mode, rmax
+  integer, intent(inout) :: at, nin, omax, rmax, verbose
+  character(*), intent(out) :: directory
   integer :: i, ierror, length, narg, satus
-  integer :: set_at = 0, set_nin = 0, set_omg = 0, set_tol = 0, set_omax = 0, set_rmax = 0, set_output_mode = 0
+  integer :: set_at = 0, set_fi = 0, set_nin = 0, set_omg = 0, set_tol = 0, set_omax = 0, set_rmax = 0
   character*100 argv
 
   narg = command_argument_count()
@@ -24,55 +24,90 @@ subroutine read_prm(nin, omg, omax, output_mode, rmax, tol, at)
     endif
     if (index(argv(1:5), "--at=") == 1) then        ! Flag for automatic parameter tuning
       read(argv(6:len_trim(argv)), '(i1)', iostat=ierror) at          
-      if (ierror /= 0 ) then          
+      if (ierror /= 0) then          
         error stop "option --at="
       endif
       set_at = 1
-      write(*, *) "  at=", at
-    else if (index(argv(1:6), "--nin=") == 1) then  ! Maximum number of inner iterations
+      if (verbose == 1) then
+        if (at == 0) then
+          write(*, '(a)') "  Disabled automatic paramete tuning"
+        else
+          write(*, '(a)') "  Enabled automatic paramete tuning"
+        endif
+      endif
+    endif
+  enddo
+
+  do i = 1, narg
+    call get_command_argument(i, argv, length, satus)
+    if (satus > 0) then
+      error stop "in get_command_argument"
+    endif
+    if (index(argv(1:5), "--at=") == 1) then        ! Flag for automatic parameter tuning
+    elseif (index(argv(1:6), "--nin=") == 1) then  ! Maximum number of inner iterations
       read(argv(7:len_trim(argv)), '(i10)', iostat=ierror) nin
-      if (ierror /= 0 ) then          
+      if (ierror /= 0) then          
         error stop "option --nin="
       endif
       set_nin = 1
-      write(*, *) "  nin=", nin
+      if (verbose == 1) then
+        if (at == 0) then
+          write(*, '(a, i0)') "  # of inner iterations: ", nin
+        else
+          write(*, '(a, i0)') "  Maximum # of inner iterations: ", nin
+        endif
+      endif
     else if (index(argv(1:6), "--omg=") == 1) then  ! Acceleration (relaxation) parameter 
       read(argv(7:len_trim(argv)), '(f16.10)', iostat=ierror) omg
-      if (ierror /= 0 ) then          
+      if (ierror /= 0) then          
         error stop "option --omg="
       endif
       set_omg = 1
-      write(*, *) "  omax(1)=", omg
+      if (verbose == 1) then
+        if (at == 0) then
+          write(*, '(a, f0.2)') "  Acceleration parameter (omega): ", omg
+        else
+          write(*, '(a, f0.2)') "  Initial acceleration parameter (omega): ", omg
+          endif
+      endif
     else if (index(argv(1:6), "--tol=") == 1) then  ! Stopping criterion
       read(argv(7:len_trim(argv)), '(e16.10e2)', iostat=ierror) tol
-      if (ierror /= 0 ) then          
+      if (ierror /= 0) then          
         error stop "option --tol="
       endif
       set_tol = 1
-      write(*, *) "  tol=", tol
+      if (verbose == 1) then
+        write(*, '(a, es8.2e2)') "  Stopping criterion: ", tol
+      endif
     else if (index(argv(1:7), "--omax=") == 1) then ! Maximum # of outer iterations
        read(argv(8:len_trim(argv)), '(i10)', iostat=ierror) omax
-       if (ierror /= 0 ) then          
+       if (ierror /= 0) then          
           error stop "option --omax="
        endif
        set_omax = 1
-       write(*, *) "  omax=", omax
+       if (verbose == 1) then
+        write(*, '(a, i0)') "  Maximum # of outer iterations: ", omax
+      endif
     else if (index(argv(1:7), "--rmax=") == 1) then ! Maximum # of restart cycles
       read(argv(8:len_trim(argv)), '(i10)', iostat=ierror) rmax
       if (ierror /= 0 ) then          
         error stop "option --rmax="
       endif
       set_rmax = 1
-      write(*, *) "  rmax=", rmax
-    else if (index(argv(1:14), "--output_mode=") == 1) then
-      read(argv(15:len_trim(argv)), '(i1)', iostat=ierror) output_mode
-      if (ierror /= 0 ) then          
-        error stop "option --output_mode="
+      if (verbose == 1) then
+        write(*, '(a, i0)') "  Maximum # of restarts: ", rmax
       endif
-      set_output_mode = 1
-      write(*, *) "  output_mode=", output_mode
-    else if (index(argv(1:5), "--fi=") /= 1) then
-      write(*, *) argv
+    else if (index(argv(1:2), "-v") == 1) then          
+    else if (index(argv(1:5), "--fi=") == 1) then      
+      read(argv(6:len_trim(argv)), '(a)', iostat=ierror) directory
+      if (ierror /= 0 ) then          
+        error stop "option --directory="
+      endif
+      set_fi = 1
+      if (verbose == 1) then
+        write(*, '(a, a)') "  Directory: ", trim(directory)
+      endif
+    else
       error stop "Unknown argument"
     endif
   enddo  
@@ -80,54 +115,69 @@ subroutine read_prm(nin, omg, omax, output_mode, rmax, tol, at)
 ! Set the default values of parameters (if not set above)
   if (set_at == 0) then
     at = 1
-    write(*, *) "  Enebled automatic paramete tuning (default)"
+    if (verbose == 1) then
+      write(*, *) "  Enebled automatic paramete tuning (default)"
+    endif
   endif
 
   if (set_nin == 0) then
     nin = 50
-    write(*, *) "  Maximum # of inner iterations (default): ", nin
+    if (verbose == 1) then
+      write(*, *) "  Maximum # of inner iterations (default): ", nin
+    endif
   endif
 
   if (set_omg == 0) then
     omg = 1.0d0
-    write(*, *) "  Initial Value of omega (default): ", omg
+    if (verbose == 1) then
+      write(*, *) "  Initial Value of omega (default): ", omg
+    endif
   endif    
 
   if (set_tol == 0) then
     tol = 1.0d-8
-    write(*, *) "  Stopping criterion (default)", tol
+    if (verbose == 1) then
+      write(*, *) "  Stoppin  g criterion (default)", tol
+    endif
   endif
 
   if (set_omax == 0) then
     omax = 800
-    write(*, *) "  Maximum # of outer iterations (default): ", omax
+    if (verbose == 1) then
+      write(*, *) "  Maximum # of outer iterations (default): ", omax
+    endif
   endif
 
   if (set_rmax == 0) then
     rmax = 0
-    write(*, *) "  Maximum # of restarts (default): ", rmax
+    if (verbose == 1) then
+      write(*, *) "  Maximum # of restarts (default): ", rmax
+    endif
   endif  
 
-  if (set_output_mode == 0) then
-    output_mode = 0
-    write(*, *) "  Output_mode (default): ", output_mode
-  endif
+  if (set_fi == 0) then
+    directory = "RANDL7"
+    if (verbose == 1) then
+      write(*, *) "  fi: ", directory
+    endif
+  endif    
 
 end subroutine read_prm
 !---------------------------------------------------------------------------
 
-subroutine read_mat(AC, ia, jp, m, n, x0, b)  
+subroutine read_mat(directory, AC, ia, jp, m, n, x0, b)  
   implicit none
 
+  character(*), intent(in) :: directory
   real(real64), allocatable, intent(out) :: AC(:), b(:), x0(:)
 
   integer, allocatable, intent(out) :: ia(:), jp(:)
   integer, intent(inout) :: m, n
   integer is, j, l, nnz
-  integer :: fi_AC = 14, fi_jp = 15, fi_ia = 16
+  integer :: fi_AC = 14, fi_jp = 15, fi_ia = 16  
 
-  open(fi_AC, file = 'RANDL7/AC.ccs', action = 'read', iostat = is, status="old")
-  if (is /= 0) stop 'cannot open AC file'
+  open(fi_AC, file = trim(directory)//'AC.ccs', action = 'read', iostat = is, status="old")
+  if (is /= 0) error stop 'cannot open file AC.ccs'
   read(fi_AC, *) m, n, nnz
 
   allocate(AC(nnz))
@@ -141,19 +191,19 @@ subroutine read_mat(AC, ia, jp, m, n, x0, b)
   close(fi_AC)
 
 ! Load jp
-  open(fi_jp, file ='RANDL7/jp.ccs', action = 'read', iostat = is, status="old")
+  open(fi_jp, file = trim(directory)//'jp.ccs', action = 'read', iostat = is, status="old")
   if (is /= 0) stop 'cannot open jp file'
   read(fi_jp, *) (jp(j), j = 1, n+1)
   close(fi_jp)
 
 ! Load ia
-  open(fi_ia, file = 'RANDL7/ia.ccs', action = 'read', iostat = is, status="old")
+  open(fi_ia, file = trim(directory)//'ia.ccs', action = 'read', iostat = is, status="old")
   if (is /= 0) stop 'cannot open ia file'
   read(fi_ia, *) (ia(l), l = 1, nnz)
   close(fi_ia)
 
 !	b : = random
-!	call random_seed
+  call random_seed
   call random_number(b(1:m))
   b(1:m) = 2.0d0*b(1:m) - one
 
@@ -165,7 +215,7 @@ subroutine output(AC, ia, jp, m, n, &
                   nin, omg, &
                   x, &
                   iter, omax, riter, relres, t_tot, &
-                  output_mode)
+                  verbose)
   use func  
   implicit none
 
@@ -177,7 +227,7 @@ subroutine output(AC, ia, jp, m, n, &
   real(real64) tmp, nrm_b, nrm_r, nrmATb, nrmATr
 
   integer, intent(in) :: ia(:), jp(:)
-  integer, intent(in) :: iter, m, n, nin, omax, output_mode, riter
+  integer, intent(in) :: iter, m, n, nin, omax, verbose, riter
   integer :: info = 10, reshis = 11, sol = 12
   integer i, is, j, l, k, k1, k2
 
@@ -212,21 +262,24 @@ subroutine output(AC, ia, jp, m, n, &
 
   nrmATr = nrm2(ATr(1:n), n)
 
-  if (output_mode == 0) then
+  if (verbose == 1) then
 
-    write(*, '(a, f6.3)') '   omega: ', omg
-    write(*, *) '  # of outer iterations: ', iter
-    write(*, *) '  # of inner iterations: ', nin
-    write(*, *) '  # of restarts: ', riter
-    write(*, *) '  Restart cycle: ', omax
-    write(*, '(a, f16.5)') '   CPU time: ', t_tot
-    write(*, *) '  Relative residual: ', relres(iter)
-    write(*, *) '  Actual relative residual (ATr): ', nrmATr / nrmATb
-    write(*, *) '  Actual relative residual (r): ', nrm_r / nrm_b
+    write(*, '(a)') 'Results:'
+    write(*, '(a, f0.2)') '  omega: ', omg
+    write(*, '(a, i0)') '  # of outer iterations: ', iter
+    write(*, '(a, i0)') '  # of inner iterations: ', nin
+    write(*, '(a, i0)') '  # of restarts: ', riter
+    write(*, '(a, i0)') '  Restart cycle: ', omax
+    write(*, '(a, f0.2)') '   CPU time: ', t_tot
+    write(*, '(a, es8.2e2)') '  Relative residual: ', relres(iter)
+    write(*, '(a, es8.2e2)') '  Actual relative residual (ATr): ', nrmATr / nrmATb
+    write(*, '(a, es8.2e2)') '  Actual relative residual (r): ', nrm_r / nrm_b
 
   else
 
-    write(*, '(f6.3, f10.5, i4)') omg, t_tot, iter
+    write(*, '(a)') 'Results (omega time iter):'
+    write(*, '(f0.2, a, f0.2, a, i0)') omg, ' ', t_tot, ' ', iter
+   ! w rite(logcsv, '(i0, a, i0, a, f0.2, a, f0.2)') iter, ',', nin, ',', omg, ',', t_tot
 
   endif
 
@@ -238,9 +291,9 @@ subroutine output(AC, ia, jp, m, n, &
   write(info, *) '# of restarts: ', riter
   write(info, *) 'Restart cycle: ', omax
   write(info, '(a, f16.5)') ' CPU time: ', t_tot
-  write(info, *) 'Relative residual: ', relres(iter)
-  write(info, *) 'Actual relative residual (ATr): ', nrmATr / nrmATb
-  write(info, *) 'Actual relative residual (r): ', nrm_r / nrm_b
+  write(info, *) 'Relative residual norm: ', relres(iter)
+  write(info, *) 'Actual relative residual norm (ATr) : ', nrmATr / nrmATb
+  write(info, *) 'Actual relative residual norm (r): ', nrm_r / nrm_b
   close(info)
 
   open(reshis, file='reshis.dat', action='write', iostat=is, status='replace')

@@ -11,7 +11,7 @@ contains
                       at, nin, omg, &
                       tol, omax, rmax, &
                       x, &
-                      iter, riter, relres)
+                      iter, riter, relres, conv, verbose)
 
   real(real64) H(omax+1, omax), V(n, omax+1)
   real(real64), intent(in) :: b(:), AC(:)
@@ -23,12 +23,13 @@ contains
   real(real64) :: beta, beta0, eps, inprod, nrmATr, nrmATr0, tmp
 
   integer, intent(in) :: ia(:), jp(:)
-  integer, intent(in) :: at, m, n, omax, rmax
+  integer, intent(in) :: at, m, n, omax, rmax, verbose
   integer, intent(inout) :: nin
-  integer, intent(out) :: iter, riter
+  integer, intent(out) :: iter, riter, conv
   integer :: bd = 0, i, iter_tot = 1, j, k, k1, k2, l, p
   
   eps = epsilon(eps)
+  conv = 0
 
 !	The initial approximate solution is equal to zero
   x0(1:n) = zero
@@ -71,9 +72,13 @@ contains
     r(1:m) = b(1:m) - r(1:m)
 
     if (at > 0) then
-      write(*, *) 'Automatic NR-SOR inner-iteration parameter tuning'
+      if (verbose == 1) then
+        write(*, '(a)') '  Automatic parameter tuning started'
+      endif
       call atNRSOR(AC, ia, jp, m, n, r, Aei, nin, omg, w)
-      write(*, *) 'Tuned'
+      if (verbose == 1) then
+        write(*, '(a)') '  Automatic parameter tuning finished'
+      endif
     else if (at == 0) then
     ! NR-SOR inner-iteration preconditioning without automatic parameter tuning
       call NRSOR(AC, ia, jp, n, r, Aei, nin, omg, w)
@@ -157,6 +162,12 @@ contains
 
         x(1:n) = x0(1:n) + matmul(V(1:n, 1:k), y(1:k))
 
+        if (bd == 1) then
+          iter = iter_tot
+          Riter = p
+          return
+        endif
+
         r(1:m) = zero
         do j = 1, n
           tmp = x(j)
@@ -176,9 +187,9 @@ contains
           w(j) = sum(AC(k1:k2) * r(ia(k1:k2)))
         enddo
 
-        if (nrm2(w(1:n), n) < tol*nrmATr0 .or. &
-          (p==rmax .and. k==omax) .or. bd == 1) then
-
+        if (nrm2(w(1:n), n) < tol*nrmATr0) then
+          
+          conv = 1
           iter = iter_tot
           Riter = p          
 
@@ -195,6 +206,9 @@ contains
     x0(1:n) = x(1:n)
 
   enddo
+
+  iter = iter_tot - 1
+  Riter = p - 1
 
   end subroutine BAGMRES
 
