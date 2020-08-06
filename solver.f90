@@ -17,14 +17,14 @@ contains
   real(real64), intent(in) :: b(:), AC(:)
   real(real64), intent(out) :: relres(:), x(:)  
   real(real64) c(omax), g(omax+1), r(m), s(omax), & 
-            tmp_x(n), w(n), x0(n), y(omax), Aei(n)
+               w(n), x0(n), y(omax), Aei(n)
   real(real64), intent(in) :: tol
-  real(real64), intent(inout) :: omg
-  real(real64) :: beta, beta0, eps, inprod, nrmATr, nrmATr0, tmp
+  real(real64), intent(out) :: omg
+  real(real64) :: beta, beta0, eps, nrmATr, nrmATr0, tmp
 
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: at, m, n, omax, rmax, verbose
-  integer, intent(inout) :: nin
+  integer, intent(out) :: nin
   integer, intent(out) :: iter, riter, conv
   integer :: bd = 0, i, iter_tot = 1, j, k, k1, k2, l, p
   
@@ -38,9 +38,9 @@ contains
   do j = 1, n
     k1 = jp(j)
     k2 = jp(j+1)-1
-    inprod = sum(AC(k1:k2)*AC(k1:k2))
-    if (inprod /= zero) then
-      Aei(j) = one / inprod
+    tmp = sum(AC(k1:k2) * AC(k1:k2))
+    if (tmp /= zero) then
+      Aei(j) = one / tmp
     else
       write(*, *) 'warning: ||aj|| = 0.0, j =', j      
       stop
@@ -91,9 +91,8 @@ contains
       beta = nrm2(w(1:n), n)
     endif
 
-  ! Normalization of the vector v_1
-    tmp = one / beta
-    V(1:n, 1) = tmp * w(1:n)
+  ! Normalization of the vector v_1    
+    V(1:n, 1) = (one/beta) * w(1:n)
 
     g(1) = beta
 
@@ -123,9 +122,8 @@ contains
 
       if (tmp > eps) then
       ! Normalization of the vector v_{k+1}
-        H(k+1, k) = tmp
-        tmp = one / tmp
-        V(1:n, k+1) = tmp * w(1:n)
+        H(k+1, k) = tmp        
+        V(1:n, k+1) = (one/tmp) * w(1:n)
       else
         write(*, *) 'BREAKDOW at step', k
         write(*, *) 'h_{k+1, k} =', H(k+1, k)
@@ -144,14 +142,13 @@ contains
 
       H(k, k) = one / H(k, k)
 
-      g(k+1) = -s(k)*g(k)
-      g(k) = c(k)*g(k)
+      g(k+1) = -s(k) * g(k)
+      g(k)   =  c(k) * g(k)
 
       relres(iter_tot) = abs(g(k+1)) / beta0
 
     !	Convergence check
-      if (relres(iter_tot) < tol .or. & 
-         k == omax .or. bd == 1) then
+      if (relres(iter_tot) <= tol .or. bd == 1) then
 
         !	Derivation of the approximate solution x_k
         !	Backward substitution
@@ -164,7 +161,7 @@ contains
 
         if (bd == 1) then
           iter = iter_tot
-          Riter = p
+          riter = p
           return
         endif
 
@@ -177,7 +174,7 @@ contains
           enddo
         enddo
 
-        ! r_k = b - A*x_k
+      ! r_k = b - A*x_k
         r(1:m) = b(1:m) - r(1:m)
 
       ! w = A^T r
@@ -187,7 +184,7 @@ contains
           w(j) = sum(AC(k1:k2) * r(ia(k1:k2)))
         enddo
 
-        if (nrm2(w(1:n), n) < tol*nrmATr0) then
+        if (nrm2(w(1:n), n) <= tol*nrmATr0) then
           
           conv = 1
           iter = iter_tot
@@ -203,7 +200,14 @@ contains
 
     enddo
 
-    x0(1:n) = x(1:n)
+    ! Derivation of the approximate solution x_k
+    ! Backward substitution
+    y(k) = g(k) * H(k, k)
+    do i = k-1, 1, -1
+      y(i) = (g(i) - sum(H(i, i+1:k) * y(i+1:k))) * H(i, i)
+    enddo
+
+    x0(1:n) = x0(1:n) + matmul(V(1:n, 1:k), y(1:k))
 
   enddo
 
@@ -249,7 +253,8 @@ contains
   integer, intent(in) :: ia(:), jp(:)
   integer, intent(in) :: m, n
   integer, intent(out) :: nin
-  real(real64) :: d, e, omg, res1, res2 = zero, y(n), tmprhs(m)
+  real(real64), intent(out) :: omg
+  real(real64) :: d, e, res1, res2 = zero, y(n), tmprhs(m)
   integer i, ii, j, k, k1, k2, l
 
   tmprhs(1:m) = rhs(1:m)

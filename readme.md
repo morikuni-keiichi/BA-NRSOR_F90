@@ -15,6 +15,9 @@ For commercial use, please make a contact to
 Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp).
 
 
+
+## Organization
+
 ## Usage
 
 To simply run the program, execute the following:
@@ -42,7 +45,7 @@ The test matrix called RANDL7 in the compressed column storage (CCS) format is g
 To run the program with specific values of parameters on the test matrix RANDL7, execute the following:
 
 ```
-$ ./main --at=1 --nin=50 --omg=1.0 --tol=1.0e-8 --omax=800 --rmax=0 —output_mode=0 --fi=RANDL7/
+$ ./main --at=1 --nin=50 --omg=1.0 --tol=1.0e-8 --omax=800 --rmax=0 --output_mode=0 --directory=RANDL7/
 ```
 
 Some specific data is output in log.csv.

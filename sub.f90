@@ -98,8 +98,8 @@ subroutine read_prm(nin, omg, omax, verbose, rmax, tol, at, directory)
         write(*, '(a, i0)') "  Maximum # of restarts: ", rmax
       endif
     else if (index(argv(1:2), "-v") == 1) then          
-    else if (index(argv(1:5), "--fi=") == 1) then      
-      read(argv(6:len_trim(argv)), '(a)', iostat=ierror) directory
+    else if (index(argv(1:12), "--directory=") == 1) then      
+      read(argv(13:len_trim(argv)), '(a)', iostat=ierror) directory
       if (ierror /= 0 ) then          
         error stop "option --directory="
       endif
@@ -174,9 +174,9 @@ subroutine read_mat(directory, AC, ia, jp, m, n, x0, b)
   integer, allocatable, intent(out) :: ia(:), jp(:)
   integer, intent(inout) :: m, n
   integer is, j, l, nnz
-  integer :: fi_AC = 14, fi_jp = 15, fi_ia = 16  
+  integer :: fi_AC = 14, fi_jp = 15, fi_ia = 16
 
-  open(fi_AC, file = trim(directory)//'AC.ccs', action = 'read', iostat = is, status="old")
+  open(fi_AC, file = trim(directory)//'/AC.ccs', action = 'read', iostat = is, status="old")
   if (is /= 0) error stop 'cannot open file AC.ccs'
   read(fi_AC, *) m, n, nnz
 
@@ -191,13 +191,13 @@ subroutine read_mat(directory, AC, ia, jp, m, n, x0, b)
   close(fi_AC)
 
 ! Load jp
-  open(fi_jp, file = trim(directory)//'jp.ccs', action = 'read', iostat = is, status="old")
+  open(fi_jp, file = trim(directory)//'/jp.ccs', action = 'read', iostat = is, status="old")
   if (is /= 0) stop 'cannot open jp file'
   read(fi_jp, *) (jp(j), j = 1, n+1)
   close(fi_jp)
 
 ! Load ia
-  open(fi_ia, file = trim(directory)//'ia.ccs', action = 'read', iostat = is, status="old")
+  open(fi_ia, file = trim(directory)//'/ia.ccs', action = 'read', iostat = is, status="old")
   if (is /= 0) stop 'cannot open ia file'
   read(fi_ia, *) (ia(l), l = 1, nnz)
   close(fi_ia)
@@ -285,15 +285,15 @@ subroutine output(AC, ia, jp, m, n, &
 
   open(info, file='info.dat', action='write', iostat=is, status='replace')
   if (is /= 0) stop 'cannot open info.dat file'
-  write(info, '(a, f6.3)') ' omega: ', omg
-  write(info, *) '# of outer iterations: ', iter
-  write(info, *) '# of inner iterations: ', nin
-  write(info, *) '# of restarts: ', riter
-  write(info, *) 'Restart cycle: ', omax
-  write(info, '(a, f16.5)') ' CPU time: ', t_tot
-  write(info, *) 'Relative residual norm: ', relres(iter)
-  write(info, *) 'Actual relative residual norm (ATr) : ', nrmATr / nrmATb
-  write(info, *) 'Actual relative residual norm (r): ', nrm_r / nrm_b
+  write(info, '(a, f0.2)') '  omega: ', omg
+  write(info, '(a, i0)') '  # of outer iterations: ', iter
+  write(info, '(a, i0)') '  # of inner iterations: ', nin
+  write(info, '(a, i0)') '  # of restarts: ', riter
+  write(info, '(a, i0)') '  Restart cycle: ', omax
+  write(info, '(a, f0.2)') '   CPU time: ', t_tot
+  write(info, '(a, es8.2e2)') '  Relative residual: ', relres(iter)
+  write(info, '(a, es8.2e2)') '  Actual relative residual (ATr): ', nrmATr / nrmATb
+  write(info, '(a, es8.2e2)') '  Actual relative residual (r): ', nrm_r / nrm_b
   close(info)
 
   open(reshis, file='reshis.dat', action='write', iostat=is, status='replace')

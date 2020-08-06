@@ -7,7 +7,7 @@ program main
 
   real(real64), allocatable :: b(:), relres(:), x(:), x0(:), AC(:)
   integer,  allocatable :: jp(:), ia(:)
-  real(real64) omg, t1, t2, t_cri, t_tot, tol
+  real(real64) omg, t1, t2, t_tot, tol
   integer :: at, conv, err, i, iter, length, logcsv = 20, m, n, narg, nin, omax, verbose = 0, riter, rmax, status
   character*100 argv, directory  
 
@@ -36,8 +36,8 @@ program main
   if (err /= 0) then
     error stop "allocate x"
   endif
-  allocate(relres(omax*(rmax+1)))
 
+  allocate(relres(omax*(rmax+1)))
   if (err /= 0) then
     error stop "allocate relres"
   endif
@@ -45,7 +45,6 @@ program main
   open(logcsv, file='log.csv', position='append')
 
   t_tot = zero
-  t_cri = zero
 
   write(*, '(a)') 'BA-GMRES started'  
 
@@ -64,10 +63,8 @@ program main
     write(*, '(a)') "BA-GMRES converged"
   else
     write(*, '(a)') 'BA-GMRES failed to converge'
-  endif
-  
-  write(*, *) 
-  
+  endif  
+  write(*, *)  
 
   t_tot = t_tot + t2 - t1 ! total CPU Time
 
