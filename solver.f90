@@ -202,14 +202,16 @@ contains
 
     ! Derivation of the approximate solution x_k
     ! Backward substitution
-    y(k) = g(k) * H(k, k)
-    do i = k-1, 1, -1
-      y(i) = (g(i) - sum(H(i, i+1:k) * y(i+1:k))) * H(i, i)
+    y(omax) = g(omax) * H(omax, omax)
+    do i = omax-1, 1, -1
+      y(i) = (g(i) - sum(H(i, i+1:omax) * y(i+1:omax))) * H(i, i)
     enddo
 
-    x0(1:n) = x0(1:n) + matmul(V(1:n, 1:k), y(1:k))
+    x0(1:n) = x0(1:n) + matmul(V(1:n, 1:omax), y(1:omax))
 
   enddo
+
+  x = x0
 
   iter = iter_tot - 1
   Riter = p - 1

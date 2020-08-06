@@ -1,4 +1,4 @@
-# Fortran codes for the AB-GMRES method preconditioned by the NE-SOR inner iterations
+# Fortran codes for the BA-GMRES method preconditioned by the NR-SOR inner iterations
 
 by Keiichi Morikuni and Ken Hayami
 
@@ -8,11 +8,15 @@ This software is currently released under the [GNU General Public License](http:
 
 If you use this code in research for publication, please cite the papers
 
-1. Keiichi Morikuni and Ken Hayami, Convergence of inner-iteration GMRES methods for rank-deficient least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 36, Issue 1, pages 225-250, 2015. DOI: [10.1137/130946009](https://doi.org/10.1137/130946009)
+1. Keiichi Morikuni and Ken Hayami, Inner-iteration Krylov subspace methods for least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 34, Issue 1, pages 1-22, 2013. DOI: [10.1137/110828472](https://doi.org/10.1137/110828472)
+2. Keiichi Morikuni and Ken Hayami, Convergence of inner-iteration GMRES methods for rank-deficient least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 36, Issue 1, pages 225-250, 2015. DOI: [10.1137/130946009](https://doi.org/10.1137/130946009)
 
 For commercial use, please make a contact to
 Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp).
 
+
+
+## Organization
 
 ## Usage
 
@@ -30,21 +34,22 @@ $ make
 
 Change the Fortran compiler given in the Makefile file if necessary.
 
-To simply run the program with the default values of parameters on a test matrix RANDL7T, execute the following:
+To simply run the program with the default values of parameters on a test matrix RANDL7, execute the following:
 
 ```
 $ ./main 
 ```
 Then the program outputs the approximate solution data solution.dat, the result data info.dat, and the relative residual norm history data reshis.dat.
-The test matrix called RANDL7T in the compressed column storage (CCS) format is given in directory RANDL7T.
+The test matrix called RANDL7 in the compressed column storage (CCS) format is given in directory RANDL7.
 
 To run the program with specific values of parameters on the test matrix RANDL7, execute the following:
 
 ```
-$ ./main --at=1 --nin=50 --omg=1.0 --tol=1.0e-8 --omax=800 --rmax=0 -v --directory=RANDL7T/
+$ ./main --at=1 --nin=50 --omg=1.0 --tol=1.0e-8 --omax=800 --rmax=0 -v --directory=RANDL7/
 ```
 
 Some specific data is output in log.csv.
+
 
 - `--at=`
 This option enables to automatically determine the values of the number of inner
@@ -67,7 +72,9 @@ This option determines the
 
 - `--rmax=`: This option determines the number of restart cycles. The restart is turned off for `—rmax=0`.
 
-- `-v`: This option enables a detailed output display.  
+- `--output_mode=`: This option enables a detailed output display.  
+	- `--output_mode=0`: Turn off the detailed output display  
+	- `--output_mode=1`: Turn on the detailed output display.
 
 - `--fi=`: This option determines the directory name in which the matrix data used is contained. 
 The directory name must be the relative one.
@@ -90,5 +97,6 @@ The Graduate University for Advanced Studies (SOKENDAI), Shonan Village, Hayama,
 
 ### References
 
-1. Keiichi Morikuni and Ken Hayami, Convergence of inner-iteration GMRES methods for rank-deficient least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 36, Issue 1, pages 225-250, 2015. DOI: [10.1137/130946009](https://doi.org/10.1137/130946009)
+1. Keiichi Morikuni and Ken Hayami, Inner-iteration Krylov subspace methods for least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 34, Issue 1, pages 1-22, 2013. DOI: [10.1137/110828472](https://doi.org/10.1137/110828472)
+2. Keiichi Morikuni and Ken Hayami, Convergence of inner-iteration GMRES methods for rank-deficient least squares problems, SIAM Journal on Matrix Analysis and Applications, Volume 36, Issue 1, pages 225-250, 2015. DOI: [10.1137/130946009](https://doi.org/10.1137/130946009)
 

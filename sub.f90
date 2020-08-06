@@ -113,54 +113,55 @@ subroutine read_prm(nin, omg, omax, verbose, rmax, tol, at, directory)
   enddo  
 
 ! Set the default values of parameters (if not set above)
+ ! Set the default values of parameters (if not set above)
   if (set_at == 0) then
     at = 1
     if (verbose == 1) then
-      write(*, *) "  Enebled automatic paramete tuning (default)"
+      write(*, '(a)') "  Enebled automatic paramete tuning (default)"
     endif
   endif
 
   if (set_nin == 0) then
     nin = 50
     if (verbose == 1) then
-      write(*, *) "  Maximum # of inner iterations (default): ", nin
+      write(*, '(a, i0)') "  Maximum # of inner iterations (default): ", nin
     endif
   endif
 
   if (set_omg == 0) then
     omg = 1.0d0
     if (verbose == 1) then
-      write(*, *) "  Initial Value of omega (default): ", omg
+      write(*, '(a, f0.2)') "  Initial Value of omega (default): ", omg
     endif
   endif    
 
   if (set_tol == 0) then
     tol = 1.0d-8
     if (verbose == 1) then
-      write(*, *) "  Stoppin  g criterion (default)", tol
+      write(*, '(a, e16.10e2)') "  Stoppin  g criterion (default)", tol
     endif
   endif
 
   if (set_omax == 0) then
     omax = 800
     if (verbose == 1) then
-      write(*, *) "  Maximum # of outer iterations (default): ", omax
+      write(*, '(a, i0)') "  Maximum # of outer iterations (default): ", omax
     endif
   endif
 
   if (set_rmax == 0) then
     rmax = 0
     if (verbose == 1) then
-      write(*, *) "  Maximum # of restarts (default): ", rmax
+      write(*, '(a, i0)') "  Maximum # of restarts (default): ", rmax
     endif
   endif  
 
   if (set_fi == 0) then
     directory = "RANDL7"
-    if (verbose == 1) then
-      write(*, *) "  fi: ", directory
+    if (verbose == 1) then      
+      write(*, '(a, a)') "  Directory: ", directory
     endif
-  endif    
+  endif 
 
 end subroutine read_prm
 !---------------------------------------------------------------------------
