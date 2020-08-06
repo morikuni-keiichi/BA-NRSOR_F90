@@ -67,9 +67,7 @@ This option determines the
 
 - `--rmax=`: This option determines the number of restart cycles. The restart is turned off for `—rmax=0`.
 
-- `--output_mode=`: This option enables a detailed output display.  
-	- `--output_mode=0`: Turn off the detailed output display  
-	- `--output_mode=1`: Turn on the detailed output display.
+- `-v`: This option enables a detailed output display.  
 
 - `--fi=`: This option determines the directory name in which the matrix data used is contained. 
 The directory name must be the relative one.
