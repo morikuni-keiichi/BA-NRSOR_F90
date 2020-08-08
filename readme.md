@@ -15,9 +15,6 @@ For commercial use, please make a contact to
 Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.fw@u.tsukuba.ac.jp).
 
 
-
-## Organization
-
 ## Usage
 
 To simply run the program, execute the following:
@@ -55,13 +52,12 @@ Some specific data is output in log.csv.
 This option enables to automatically determine the values of the number of inner
 iterations and the relaxation parameter. A value for this option must be provided;
 possible values are
--- `0`: turn off the automatic parameter tuning
--- `1`: turn on it.
-The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart or specified by you.
+-- `0`: disable the automatic parameter tuning (The values of the NR-SOR inner-iteration parameters can be specified.)
+-- `1`: enable it (The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart.)
 
 - `--nin=`: Nonnegative integer
 This option determines the  
-	- number of inner iterations for the setting for `--a=0`
+	- number of inner iterations for the setting for `--at=0`
 	- maximum number of inner iterations for `--at=n`, n > 0 and the actual number of inner iterations are automatically determined.
 
 - `--omg=`: This option determines the value of the relaxation parameter for `--at=0`; otherwise the value provided is used as the initial value of the relaxation parameter for the automatic parameter tuning.
@@ -70,13 +66,11 @@ This option determines the
 
 - `--omax=`: This option determines the maximum number of outer iterations.
 
-- `--rmax=`: This option determines the number of restart cycles. The restart is turned off for `—rmax=0`.
+- `--rmax=`: This option determines the maximum number of restart cycles. The restart is turned off for `—rmax=0`.
 
-- `--output_mode=`: This option enables a detailed output display.  
-	- `--output_mode=0`: Turn off the detailed output display  
-	- `--output_mode=1`: Turn on the detailed output display.
+- `-v`: This option enables a detailed output display.  
 
-- `--fi=`: This option determines the directory name in which the matrix data used is contained. 
+- `--directory=`: This option determines the directory name in which the matrix data used is contained. 
 The directory name must be the relative one.
 
 ## Contacts
