@@ -50,10 +50,9 @@ Some specific data is output in log.csv.
 
 - `--at=`
 This option enables to automatically determine the values of the number of inner
-iterations and the relaxation parameter. A value for this option must be provided;
-possible values are
--- `0`: disable the automatic parameter tuning (The values of the NR-SOR inner-iteration parameters can be specified.)
--- `1`: enable it (The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart.)
+iterations and the relaxation parameter.
+	- `--at=0`: disable the automatic parameter tuning (The values of the NR-SOR inner-iteration parameters can be specified.)
+	- `--at=1`: enable it (default) (The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart.)
 
 - `--nin=`: Nonnegative integer
 This option determines the  
