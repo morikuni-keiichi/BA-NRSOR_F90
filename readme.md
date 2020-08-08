@@ -54,22 +54,22 @@ iterations and the relaxation parameter.
 	- `--at=0`: disable the automatic parameter tuning (The values of the NR-SOR inner-iteration parameters can be specified.)
 	- `--at=1`: enable it (default) (The values of the NR-SOR inner-iteration parameters can be automatically tuned at each restart.)
 
-- `--nin=`: Nonnegative integer
+- `--nin=`: Nonnegative integer (default `--nin=50`).
 This option determines the  
 	- number of inner iterations for the setting for `--at=0`
 	- maximum number of inner iterations for `--at=n`, n > 0 and the actual number of inner iterations are automatically determined.
 
-- `--omg=`: This option determines the value of the relaxation parameter for `--at=0`; otherwise the value provided is used as the initial value of the relaxation parameter for the automatic parameter tuning.
+- `--omg=`: This option determines the value of the relaxation parameter for `--at=0`; otherwise the value provided is used as the initial value of the relaxation parameter for the automatic parameter tuning. (default `--omg=1.0`)
 
-- `--tol=`: This option determines the threshold in terms of the relative residual norm for terminating the iterations. Typically, the value is less than one.
+- `--tol=`: This option determines the threshold in terms of the relative residual norm for terminating the iterations. (default `--tol=1e-8`) Typically, the value is less than one.
 
-- `--omax=`: This option determines the maximum number of outer iterations.
+- `--omax=`: This option determines the maximum number of outer iterations. (default `--omax=800`)
 
-- `--rmax=`: This option determines the maximum number of restart cycles. The restart is turned off for `—rmax=0`.
+- `--rmax=`: This option determines the maximum number of restart cycles. The restart is turned off for `—rmax=0` (default).
 
 - `-v`: This option enables a detailed output display.  
 
-- `--directory=`: This option determines the directory name in which the matrix data used is contained. 
+- `--directory=`: This option determines the directory name in which the matrix data used is contained. (default `--directory=RANDL7`)
 The directory name must be the relative one.
 
 ## Contacts
