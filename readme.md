@@ -37,7 +37,7 @@ To simply run the program with the default values of parameters on a test matrix
 $ ./main 
 ```
 Then the program outputs the approximate solution data solution.dat, the result data info.dat, and the relative residual norm history data reshis.dat.
-The test matrix called RANDL7 in the compressed column storage (CCS) format is given in directory RANDL7.
+A test matrix called RANDL7 in the compressed column storage (CCS) format is given in directory RANDL7.
 
 To run the program with specific values of parameters on the test matrix RANDL7, execute the following:
 
