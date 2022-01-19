@@ -19,13 +19,13 @@ Keiichi Morikuni [morikuni.keiichi.fw@u.tsukuba.ac.jp](mailto:morikuni.keiichi.f
 
 To simply run the program, execute the following:
 
-```
+```shell
 $ sh test.sh
 ```
 
 To compile the codes, execute the following:
 
-```
+```shell
 $ make
 ```
 
@@ -33,7 +33,7 @@ Change the Fortran compiler given in the Makefile file if necessary.
 
 To simply run the program with the default values of parameters on a test matrix RANDL7, execute the following:
 
-```
+```shell
 $ ./main 
 ```
 Then the program outputs the approximate solution data solution.dat, the result data info.dat, and the relative residual norm history data reshis.dat.
@@ -41,7 +41,7 @@ A test matrix called RANDL7 in the compressed column storage (CCS) format is giv
 
 To run the program with specific values of parameters on the test matrix RANDL7, execute the following:
 
-```
+```shell
 $ ./main --at=1 --nin=50 --omg=1.0 --tol=1.0e-8 --omax=800 --rmax=0 -v --directory=RANDL7/
 ```
 
